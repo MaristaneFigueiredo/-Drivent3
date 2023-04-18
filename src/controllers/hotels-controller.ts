@@ -7,13 +7,13 @@ async function getHotels(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = Number(req.userId);
 
-    const ticketId = Number(req.query.ticketId);
+    // const ticketId = Number(req.query.ticketId);
 
-    if (!ticketId) {
-      return res.sendStatus(httpStatus.BAD_REQUEST);
-    }
+    // if (!ticketId) {
+    //   return res.sendStatus(httpStatus.BAD_REQUEST);
+    // }
 
-    const hotels = await hotelsService.getHotels(userId, ticketId);
+    const hotels = await hotelsService.getHotels(userId);
 
     return res.status(httpStatus.OK).send(hotels);
   } catch (error) {
