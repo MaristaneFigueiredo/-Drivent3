@@ -1,4 +1,4 @@
-import { Ticket,TicketType } from '@prisma/client';
+import { Ticket, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 import { TicketInput, TicketResponse } from '@/protocols';
 
@@ -6,7 +6,7 @@ async function getTicketsType(): Promise<TicketType[]> {
   return await prisma.ticketType.findMany();
 }
 
-async function getTicketType(ticketTypeId: number):Promise<TicketType> {
+async function getTicketType(ticketTypeId: number): Promise<TicketType> {
   return await prisma.ticketType.findFirst({
     where: {
       id: ticketTypeId,
@@ -50,7 +50,7 @@ async function findTicketWithTicketTypeById(id: number): Promise<TicketResponse>
 }
 
 async function getTiketsByUser(id: number): Promise<TicketResponse> {
-  return prisma.ticket.findFirst({   
+  return prisma.ticket.findFirst({
     where: { enrollmentId: id },
     select: {
       id: true,
@@ -74,8 +74,7 @@ async function getTiketsByUser(id: number): Promise<TicketResponse> {
   });
 }
 
-
-async function findTicket(ticketTypeId: number):Promise<Ticket> {
+async function findTicket(ticketTypeId: number): Promise<Ticket> {
   return await prisma.ticket.findFirst({
     where: {
       id: ticketTypeId,
@@ -83,7 +82,7 @@ async function findTicket(ticketTypeId: number):Promise<Ticket> {
   });
 }
 
-async function setTicketAsPaid(ticketId: number):Promise<Ticket> {
+async function setTicketAsPaid(ticketId: number): Promise<Ticket> {
   return await prisma.ticket.update({
     where: {
       id: ticketId,
@@ -94,30 +93,6 @@ async function setTicketAsPaid(ticketId: number):Promise<Ticket> {
   });
 }
 
-async function getTiketWithTicketTypeAndPaymentByUser(enrollmentId: number) {
-  
-  return prisma.ticket.findFirst({   
-    where: { enrollmentId},
-    select: {
-      id: true,
-      status: true,
-      ticketTypeId: true,
-      enrollmentId: true,
-      TicketType: {
-        select: {
-          id: true,
-          name: true,
-          price: true,
-          isRemote: true,
-          includesHotel: true,          
-        },
-      },
-      Payment:true
-    },
-  });
-  
-}
-
 const ticketRepository = {
   getTicketsType,
   createTiket,
@@ -126,7 +101,6 @@ const ticketRepository = {
   getTiketsByUser,
   findTicket,
   setTicketAsPaid,
-  getTiketWithTicketTypeAndPaymentByUser
 };
 
 export default ticketRepository;

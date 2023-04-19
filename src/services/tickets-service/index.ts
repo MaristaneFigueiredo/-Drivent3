@@ -1,6 +1,6 @@
 import { Ticket, TicketStatus, TicketType } from '@prisma/client';
 import ticketRepository from '@/repositories/ticket-repository';
-import { notFoundError, paymentRequiredError } from '@/errors';
+import { notFoundError, paymentNotFound } from '@/errors';
 import { TicketInput } from '@/protocols';
 import enrollmentsService from '@/services/enrollments-service';
 
@@ -18,8 +18,8 @@ async function getTicketType(ticketTypeId: number): Promise<TicketType> {
   return TicketType;
 }
 
-async function findTicket(ticketTypeId: number): Promise<Ticket> {  
-  const ticket = await ticketRepository.findTicket(ticketTypeId);  
+async function findTicket(ticketTypeId: number): Promise<Ticket> {
+  const ticket = await ticketRepository.findTicket(ticketTypeId);
 
   if (!ticket) {
     throw notFoundError;
@@ -28,16 +28,6 @@ async function findTicket(ticketTypeId: number): Promise<Ticket> {
 }
 
 async function createTiket(ticketTypeId: number, userId: number) {
-  /* const enrollment = await enrollmentRepository.getEnrollmentByUserId(userId);
-   if (!enrollment) {
-    throw notFoundError;    
-  } */
-
-  //if (!ticketTypeId) {
-  // throw BAD_REQUEST;
-  // return res.sendStatus(httpStatus.BAD_REQUEST);
-  //}
-
   const enrollment = await enrollmentsService.getEnrollmentByUserId(userId);
 
   const ticketType = await getTicketType(ticketTypeId);
@@ -69,30 +59,25 @@ async function setTicketAsPaid(ticketId: number) {
   return await ticketRepository.setTicketAsPaid(ticketId);
 }
 
-async function getTiketWithTicketTypeAndPaymentByUser(enrollmentId: number) {
+async function checkTiketsByUser(enrollmentId: number) {
+  const dataTicket = await ticketRepository.getTiketsByUser(enrollmentId);
 
-  const dataTicketPaymentUser = await ticketRepository.getTiketWithTicketTypeAndPaymentByUser(enrollmentId);
+  console.log('ticketService dataTicketPaymentUser', dataTicket);
 
-  console.log('ticketService dataTicketPaymentUser', dataTicketPaymentUser)
-  
   //não existe ticket
-  if(!dataTicketPaymentUser.ticketTypeId)
-      throw notFoundError
-  
-   // não inclui hotel
-   if(!dataTicketPaymentUser.TicketType.includesHotel)
-   throw notFoundError
+  if (!dataTicket.ticketTypeId) throw notFoundError;
 
-  // não existe pagamento
-  if (dataTicketPaymentUser.Payment.length === 0) 
-    throw paymentRequiredError()
-  
- 
+  const isTicketPaidNotRemoteAndHotelIncluded =
+    dataTicket.status === TicketStatus.PAID &&
+    dataTicket.TicketType.isRemote === false &&
+    dataTicket.TicketType.includesHotel;
 
-  return dataTicketPaymentUser
-  
+  if (!isTicketPaidNotRemoteAndHotelIncluded) {
+    throw paymentNotFound;
+  }
+
+  return dataTicket;
 }
-
 
 const ticketsService = {
   getTicketsType,
@@ -101,7 +86,7 @@ const ticketsService = {
   findTicket,
   getTicketType,
   setTicketAsPaid,
-  getTiketWithTicketTypeAndPaymentByUser
+  checkTiketsByUser,
 };
 
 export default ticketsService;

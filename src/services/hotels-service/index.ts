@@ -5,41 +5,18 @@ import enrollmentRepository from '@/repositories/enrollment-repository';
 import ticketsService from '@/services/tickets-service';
 import { notFoundError } from '@/errors';
 
-
-async function getHotels(userId: number) {  
-  checkEnrollmentHasBeenPaidByUser(userId)
+async function getHotels(userId: number) {
+  checkEnrollmentAndDataTicketByUser(userId);
 
   const hotels = await hotelRepository.getHotels();
-  return hotels;  
-
+  return hotels;
 }
 
-async function checkEnrollmentHasBeenPaidByUser(userId:number) {  
-  
+async function checkEnrollmentAndDataTicketByUser(userId: number) {
   //verificar se tem enrollment
-  const enrollment = await enrollmentsService.getEnrollmentByUserId(userId)
-  
-  /*
-  se eu usar essa função não preciso usar a função de cima, pois ela já consta na função abaixo acionada
-  const dataEnrollmentUser = await ticketsService.getTiketsByUser(userId);
-  */
-  
+  const enrollment = await enrollmentsService.getEnrollmentByUserId(userId);
 
-  const dataTicketPaymentUser = await ticketsService.getTiketWithTicketTypeAndPaymentByUser(enrollment.id);
-
- 
-}
-
-
-
-
-
-async function verifyHotel(ticketTypeId: number) {
-  const ticketType = await ticketsService.getTicketType(ticketTypeId);
-
-  if (ticketType.includesHotel === false) {
-    throw notFoundError;
-  }
+  const dataTicket = await ticketsService.checkTiketsByUser(enrollment.id);
 }
 
 async function getRoomsHotel() {}
