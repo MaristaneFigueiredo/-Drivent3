@@ -1,12 +1,13 @@
-import { AuthenticatedRequest } from '@/middlewares';
-import { Response, NextFunction } from 'express';
+import { Response } from 'express';
 import httpStatus from 'http-status';
+import { Hotel } from '@prisma/client';
+import { AuthenticatedRequest } from '@/middlewares';
 import hotelsService from '@/services/hotels-service';
 
 async function getHotels(req: AuthenticatedRequest, res: Response) {
+  const userId = Number(req.userId);
+
   try {
-    const userId = Number(req.userId);
-   
     const hotels = await hotelsService.getHotels(userId);
 
     return res.status(httpStatus.OK).send(hotels);
@@ -23,26 +24,19 @@ async function getHotels(req: AuthenticatedRequest, res: Response) {
 }
 
 async function getRoomsHotel(req: AuthenticatedRequest, res: Response) {
+  const userId = Number(req.userId);
+
+  const hotelId = Number(req.params.hotelId);
+
   try {
-    const userId = Number(req.userId);
-
-    const ticketId = Number(req.query.ticketId);
-
-    if (!ticketId) {
-      return res.sendStatus(httpStatus.BAD_REQUEST);
-    }
-
-    const roomsHotel = await hotelsService.getRoomsHotel();
-
-    return res.status(httpStatus.OK).send(roomsHotel);
+    const roomsHotels = await hotelsService.getRoomsHotel(userId, hotelId);
+    return res.status(httpStatus.OK).send(roomsHotels);
   } catch (error) {
     switch (error.name) {
       case 'notFoundError':
         return res.sendStatus(httpStatus.NOT_FOUND);
-      case 'requestError':
-        return res.sendStatus(httpStatus.BAD_REQUEST);
-      case 'unauthorizedError':
-        return res.sendStatus(httpStatus.UNAUTHORIZED);
+      case 'paymentNotFound':
+        return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
       default:
         return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     }
