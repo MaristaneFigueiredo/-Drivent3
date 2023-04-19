@@ -40,11 +40,13 @@ async function getEnrollmentById(id: number) {
   });
 }
 
+
 const enrollmentRepository = {
   findWithAddressByUserId,
   upsert,
   getEnrollmentByUserId,
-  getEnrollmentById
+  getEnrollmentById,
+
 };
 
 export default enrollmentRepository;

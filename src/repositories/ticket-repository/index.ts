@@ -94,6 +94,30 @@ async function setTicketAsPaid(ticketId: number):Promise<Ticket> {
   });
 }
 
+async function getTiketWithTicketTypeAndPaymentByUser(enrollmentId: number) {
+  
+  return prisma.ticket.findFirst({   
+    where: { enrollmentId},
+    select: {
+      id: true,
+      status: true,
+      ticketTypeId: true,
+      enrollmentId: true,
+      TicketType: {
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          isRemote: true,
+          includesHotel: true,          
+        },
+      },
+      Payment:true
+    },
+  });
+  
+}
+
 const ticketRepository = {
   getTicketsType,
   createTiket,
@@ -101,7 +125,8 @@ const ticketRepository = {
   findTicketWithTicketTypeById,
   getTiketsByUser,
   findTicket,
-  setTicketAsPaid
+  setTicketAsPaid,
+  getTiketWithTicketTypeAndPaymentByUser
 };
 
 export default ticketRepository;

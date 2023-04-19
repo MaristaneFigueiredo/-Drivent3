@@ -96,12 +96,15 @@ async function getEnrollmentById(id: number): Promise<Enrollment> {
   return enrollment;
 }
 
+
 const enrollmentsService = {
   getOneWithAddressByUserId,
   createOrUpdateEnrollmentWithAddress,
   getAddressFromCEP,
   getEnrollmentByUserId,
-  getEnrollmentById
+  getEnrollmentById,
+ 
+
 };
 
 export default enrollmentsService;

@@ -1,6 +1,6 @@
 import { Ticket, TicketStatus, TicketType } from '@prisma/client';
 import ticketRepository from '@/repositories/ticket-repository';
-import { notFoundError, badRequestError } from '@/errors';
+import { notFoundError, paymentRequiredError } from '@/errors';
 import { TicketInput } from '@/protocols';
 import enrollmentsService from '@/services/enrollments-service';
 
@@ -69,13 +69,39 @@ async function setTicketAsPaid(ticketId: number) {
   return await ticketRepository.setTicketAsPaid(ticketId);
 }
 
+async function getTiketWithTicketTypeAndPaymentByUser(enrollmentId: number) {
+
+  const dataTicketPaymentUser = await ticketRepository.getTiketWithTicketTypeAndPaymentByUser(enrollmentId);
+
+  console.log('ticketService dataTicketPaymentUser', dataTicketPaymentUser)
+  
+  //não existe ticket
+  if(!dataTicketPaymentUser.ticketTypeId)
+      throw notFoundError
+  
+   // não inclui hotel
+   if(!dataTicketPaymentUser.TicketType.includesHotel)
+   throw notFoundError
+
+  // não existe pagamento
+  if (dataTicketPaymentUser.Payment.length === 0) 
+    throw paymentRequiredError()
+  
+ 
+
+  return dataTicketPaymentUser
+  
+}
+
+
 const ticketsService = {
   getTicketsType,
   createTiket,
   getTiketsByUser,
   findTicket,
   getTicketType,
-  setTicketAsPaid
+  setTicketAsPaid,
+  getTiketWithTicketTypeAndPaymentByUser
 };
 
 export default ticketsService;
