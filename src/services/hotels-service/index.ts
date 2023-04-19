@@ -1,4 +1,4 @@
-import hotelRepository from '@/repositories/payment-repository';
+import hotelRepository from '@/repositories/hotel-repository';
 import enrollmentsService from '@/services/enrollments-service';
 import ticketRepository from '@/repositories/ticket-repository';
 import enrollmentRepository from '@/repositories/enrollment-repository';
@@ -6,29 +6,17 @@ import ticketsService from '@/services/tickets-service';
 import { notFoundError } from '@/errors';
 
 
-async function getHotels(userId: number) {
-  /* //testa se tem inscrição
-  const enrollment = await enrollmentsService.getEnrollmentByUserId(userId);
-
-  //testa se tem ingresso
-  const ticket = await ticketRepository.getTiketsByUser(enrollment.id);
-  if (!ticket) {
-    throw notFoundError;
-  }
-  //testa se Ele tem hotel
-  verifyHotel(ticket.ticketTypeId);
-
-  //testa se Ele pagou
-  const payment = await enrollmentsService.getPaymentByTicketId(ticket.id); */
-
+async function getHotels(userId: number) {  
   checkEnrollmentHasBeenPaidByUser(userId)
 
-  //buscar hotels
+  const hotels = await hotelRepository.getHotels();
+  return hotels;  
 
 }
 
 async function checkEnrollmentHasBeenPaidByUser(userId:number) {  
   
+  //verificar se tem enrollment
   const enrollment = await enrollmentsService.getEnrollmentByUserId(userId)
   
   /*
