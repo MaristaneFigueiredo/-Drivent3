@@ -18,6 +18,7 @@ async function getHotels(userId: number): Promise<Hotel[]> {
 }
 
 async function getHotelById(hotelId: number) {
+  
   const hotel = await hotelRepository.getHotelById(hotelId);
 
   if (!hotel) {
@@ -28,12 +29,18 @@ async function getHotelById(hotelId: number) {
 }
 
 async function getRoomsHotel(userId: number, hotelId: number) {
-  checkEnrollmentAndDataTicketByUser(userId);
+  
+  await checkEnrollmentAndDataTicketByUser(userId);
 
   getHotelById(hotelId);
 
   const roomsHotels = await hotelRepository.getRoomsHotel(hotelId);
+
+  if (!roomsHotels) {
+    throw notFoundError();
+  }
   return roomsHotels;
+  
 }
 
 async function checkEnrollmentAndDataTicketByUser(userId: number) {

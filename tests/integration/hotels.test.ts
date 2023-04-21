@@ -121,11 +121,35 @@ describe('GET /hotels', () => {
 
         })
     })
-
-    // /there is NO ticket with hotel'
-
-   
-
 }
 
 )
+
+
+describe('GET /hotels/:hotelId', () => {
+    
+    it('should return with status 401 without token', async () => {
+        const response = await server.get('/hotels/1')
+        expect(response.status).toEqual(httpStatus.UNAUTHORIZED)
+    })
+
+    it('should return with status 401 with token invalid', async () => {
+        const response = await server.get('/hotels/1').set('Authorization', 'Bearer invalidToken')
+        expect(response.status).toEqual(httpStatus.UNAUTHORIZED)
+    })
+    
+    
+    describe('When token is valid', () => {
+        it('should return with status 404 WHEN Enrollment, ticket or Hotel not exits', async () => {
+            const user = await createUser();
+            const token = await generateValidToken(user);
+            const hotel = await createHotels();
+      
+            const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
+            expect(response.status).toEqual(httpStatus.NOT_FOUND);
+          });
+      
+
+    })
+  
+})
