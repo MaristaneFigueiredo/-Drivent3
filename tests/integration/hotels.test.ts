@@ -78,22 +78,19 @@ describe('GET /hotels', () => {
         
         describe('When ticket has paid, event presencial and with hotel', () =>{
 
-            /* it('should return with status 404 WHEN there is NOT hotel listed', async() => {
+            it('should return with status 404 WHEN there is NOT hotel listed', async() => {
                 const user = await createUser()
                 const token = await generateValidToken(user)
                 const enrollment = await createEnrollmentWithAddress(user);
-                const ticketType = await createNotIncludedHotelTicketType(); 
+                const ticketType = await createIncludedHotelTicketType(); 
                 await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
 
-                const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);            
-                console.log('test response.status', response.status)
+                const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);                           
                 expect(response.status).toEqual(httpStatus.NOT_FOUND);
 
             } )
-            */
-
-
+            
 
             it('should return all hotels with status 200', async () => {
                 const user = await createUser();
