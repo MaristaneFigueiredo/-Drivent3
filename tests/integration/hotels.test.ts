@@ -41,7 +41,7 @@ describe('GET /hotels', () => {
             expect(response.status).toEqual(httpStatus.NOT_FOUND);
         })
 
-        it('should return with status 402 WHEN there is NO ticket with hotel', async () => {
+        it('should return with status 402 WHEN there is NOT paid ticket', async () => {
             const user = await createUser()
             const token = await generateValidToken(user)
             const enrollment = await createEnrollmentWithAddress(user);
@@ -53,6 +53,8 @@ describe('GET /hotels', () => {
         })
         
     })
+
+    // /there is NO ticket with hotel'
 
    /*  it('should return all hotels with status 200', async () => {
         const user = await createUser();
