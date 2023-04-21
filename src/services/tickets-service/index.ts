@@ -60,9 +60,10 @@ async function setTicketAsPaid(ticketId: number) {
 }
 
 async function checkTiketsByUser(enrollmentId: number) {
+  
   const dataTicket = await ticketRepository.getTiketsByUser(enrollmentId);
 
-  console.log('ticketService dataTicketPaymentUser', dataTicket);
+  //console.log('ticketService dataTicketPaymentUser', dataTicket);
 
   //não existe ticket
   if (!dataTicket.ticketTypeId) throw notFoundError;

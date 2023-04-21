@@ -1,11 +1,12 @@
 import { Hotel } from '@prisma/client';
-import { notFoundError } from '@/errors';
+import { notFoundError, paymentNotFound } from '@/errors';
 import hotelRepository from '@/repositories/hotel-repository';
 import enrollmentsService from '@/services/enrollments-service';
 import ticketsService from '@/services/tickets-service';
 
 async function getHotels(userId: number): Promise<Hotel[]> {
-  checkEnrollmentAndDataTicketByUser(userId);
+ 
+  await checkEnrollmentAndDataTicketByUser(userId);
 
   const hotels = await hotelRepository.getHotels();
   return hotels;
@@ -31,10 +32,14 @@ async function getRoomsHotel(userId: number, hotelId: number) {
 }
 
 async function checkEnrollmentAndDataTicketByUser(userId: number) {
-  //verificar se tem enrollment
-  const enrollment = await enrollmentsService.getEnrollmentByUserId(userId);
+  
+    const enrollment = await enrollmentsService.getEnrollmentByUserId(userId);
 
-  const dataTicket = await ticketsService.checkTiketsByUser(enrollment.id);
+
+
+    const dataTicket = await ticketsService.checkTiketsByUser(enrollment.id);
+
+    
 }
 
 const hotelsService = {

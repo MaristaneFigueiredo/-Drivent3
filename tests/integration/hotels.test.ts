@@ -1,16 +1,17 @@
 import supertest from 'supertest';
 import httpStatus from 'http-status';
 import app, { init } from '@/app';
+import { User } from '@prisma/client';
 import { cleanDb, generateValidToken } from '../helpers';
 
-//import { createEnrollmentWithAddress, createUser, createHotels } from '../factories';
-
+import { createEnrollmentWithAddress, createUser } from '../factories';
+//, createHotels
 
 const server = supertest(app)
 
 beforeAll( async () =>{
     await init()
-   // await cleanDb()
+    await cleanDb()
 })
 
 describe('GET /hotels', () => {
@@ -25,11 +26,23 @@ describe('GET /hotels', () => {
         expect(response.status).toEqual(httpStatus.UNAUTHORIZED)
     })
 
- /*    describe('', () =>{
+     describe('When token is valid', () => {
 
+        it('shoul return with status 404 WHEN Enrollment, ticket or Hotel not exits', async () => {
+            const user = await createUser()
+            const token = await generateValidToken(user)
+
+            console.log('user',user)
+            console.log('token', token)
+
+            const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+            console.log('status', response.status)
+            expect(response.status).toEqual(httpStatus.NOT_FOUND);
+        })
+        
     })
 
-    it('should return all hotels with status 200', async () => {
+   /*  it('should return all hotels with status 200', async () => {
         const user = await createUser();
         const enrollment = await createEnrollmentWithAddress(user);
         const token = await generateValidToken(user);
@@ -47,7 +60,7 @@ describe('GET /hotels', () => {
           createdAt: enrollment.birthday.toISOString(),
           updatedAt: enrollment.phone,          
         });
-      }); */
+      }); */ 
 
 }
 
