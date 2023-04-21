@@ -66,10 +66,12 @@ async function checkTiketsByUser(enrollmentId: number) {
 
   //console.log('ticketService dataTicketPaymentUser', dataTicket);
 
+
   //não existe dados do ticket
   if (!dataTicket.ticketTypeId) {    
     throw notFoundError
   }
+  
 
   const isTicketPaidNotRemoteAndHotelIncluded =
     dataTicket.status === TicketStatus.PAID &&

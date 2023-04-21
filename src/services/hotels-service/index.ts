@@ -3,6 +3,7 @@ import { notFoundError } from '@/errors';
 import hotelRepository from '@/repositories/hotel-repository';
 import enrollmentsService from '@/services/enrollments-service';
 import ticketsService from '@/services/tickets-service';
+import ticketRepository from '@/repositories/ticket-repository';
 
 async function getHotels(userId: number): Promise<Hotel[]> {
  
@@ -49,6 +50,10 @@ async function checkEnrollmentAndDataTicketByUser(userId: number) {
   // existe enrollment  
   const enrollment = await enrollmentsService.getEnrollmentByUserId(userId);
 
+  // existe ticket with enrollment 
+  const ticket = await ticketRepository.getTiketsByUser(enrollment.id);
+  
+  if (!ticket) throw notFoundError;
   
   const dataTicket = await ticketsService.checkTiketsByUser(enrollment.id);
     
