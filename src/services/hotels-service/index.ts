@@ -9,6 +9,11 @@ async function getHotels(userId: number): Promise<Hotel[]> {
   await checkEnrollmentAndDataTicketByUser(userId);
 
   const hotels = await hotelRepository.getHotels();
+  
+  if (hotels.length === 0) {    
+    throw notFoundError;
+  }
+
   return hotels;
 }
 
@@ -34,8 +39,6 @@ async function getRoomsHotel(userId: number, hotelId: number) {
 async function checkEnrollmentAndDataTicketByUser(userId: number) {
   
     const enrollment = await enrollmentsService.getEnrollmentByUserId(userId);
-
-
 
     const dataTicket = await ticketsService.checkTiketsByUser(enrollment.id);
 
