@@ -41,6 +41,17 @@ describe('GET /hotels', () => {
             expect(response.status).toEqual(httpStatus.NOT_FOUND);
         })
 
+        it("should return with status 404 WHEN there is NOT enrollment ", async () => {
+            const user = await createUser();
+            const token = await generateValidToken(user);
+      
+            const ticketType = await createRemoteTicketType();
+      
+            const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+      
+            expect(response.status).toEqual(httpStatus.NOT_FOUND);
+          });
+
         it('should return with status 402 WHEN there is NOT paid ticket', async () => {
             const user = await createUser()
             const token = await generateValidToken(user)
@@ -147,9 +158,20 @@ describe('GET /hotels/:hotelId', () => {
       
             const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
             expect(response.status).toEqual(httpStatus.NOT_FOUND);
-          });
+          });          
 
-         it('should return with status 402 WHEN there is NOT paid ticket', async () => {
+        it("should return with status 404 WHEN there is NOT enrollment ", async () => {
+            const user = await createUser();
+            const token = await generateValidToken(user);
+      
+            const ticketType = await createRemoteTicketType();
+      
+            const response = await server.get("/hotels/1").set("Authorization", `Bearer ${token}`);
+      
+            expect(response.status).toEqual(httpStatus.NOT_FOUND);
+        });  
+
+        it('should return with status 402 WHEN there is NOT paid ticket', async () => {
             const user = await createUser();
             const token = await generateValidToken(user);
             const enrollment = await createEnrollmentWithAddress(user);
@@ -161,9 +183,9 @@ describe('GET /hotels/:hotelId', () => {
       
             const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
             expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
-          });   
+        });   
 
-         it('should return with status 402 WHEN there is NOT remote ticket', async () => {
+        it('should return with status 402 WHEN there is NOT remote ticket', async () => {
             const user = await createUser();
             const token = await generateValidToken(user);
             const enrollment = await createEnrollmentWithAddress(user);
@@ -174,9 +196,9 @@ describe('GET /hotels/:hotelId', () => {
       
             const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
             expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
-          }); 
+        }); 
 
-          it('should return with status 402 WHEN there is NOT ticket with hotel', async () => {
+        it('should return with status 402 WHEN there is NOT ticket with hotel', async () => {
             const user = await createUser();
             const token = await generateValidToken(user);
             const enrollment = await createEnrollmentWithAddress(user);
@@ -187,7 +209,7 @@ describe('GET /hotels/:hotelId', () => {
       
             const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
             expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
-          });
+        });
         
          describe('When ticket has paid, event presencial and with hotel', () => {
             
