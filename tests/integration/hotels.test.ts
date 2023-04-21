@@ -1,10 +1,11 @@
 import supertest from 'supertest';
 import httpStatus from 'http-status';
 import app, { init } from '@/app';
+import { TicketStatus } from '@prisma/client';
 import { User } from '@prisma/client';
 import { cleanDb, generateValidToken } from '../helpers';
 
-import { createEnrollmentWithAddress, createUser } from '../factories';
+import { createEnrollmentWithAddress, createUser, createTicketType, createTicket } from '../factories';
 //, createHotels
 
 const server = supertest(app)
@@ -13,6 +14,10 @@ beforeAll( async () =>{
     await init()
     await cleanDb()
 })
+
+beforeEach(async () => {
+    await cleanDb();
+});
 
 describe('GET /hotels', () => {
    
@@ -28,16 +33,23 @@ describe('GET /hotels', () => {
 
      describe('When token is valid', () => {
 
-        it('shoul return with status 404 WHEN Enrollment, ticket or Hotel not exits', async () => {
+        it('should return with status 404 WHEN Enrollment, ticket or Hotel not exits', async () => {
             const user = await createUser()
             const token = await generateValidToken(user)
-
-            console.log('user',user)
-            console.log('token', token)
-
-            const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-            console.log('status', response.status)
+            
+            const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);            
             expect(response.status).toEqual(httpStatus.NOT_FOUND);
+        })
+
+        it('should return with status 402 WHEN there is NO ticket with hotel', async () => {
+            const user = await createUser()
+            const token = await generateValidToken(user)
+            const enrollment = await createEnrollmentWithAddress(user);
+            const ticketType = await createTicketType();
+            await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+            const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);            
+            expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
         })
         
     })
