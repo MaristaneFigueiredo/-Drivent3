@@ -33,9 +33,12 @@ async function getRoomsHotel(req: AuthenticatedRequest, res: Response) {
 
   try {
     const roomsHotels = await hotelsService.getRoomsHotel(userId, hotelId);
+    //console.log('Try do controller antes do res roomsHotels - hotelId', roomsHotels)
     return res.status(httpStatus.OK).send(roomsHotels);
   } catch (error) {
-    switch (error.name) {
+    //console.log('error.name', error.name)
+
+    switch (error.name) {      
       case 'notFoundError':
         return res.sendStatus(httpStatus.NOT_FOUND);
       case 'paymentNotFound':

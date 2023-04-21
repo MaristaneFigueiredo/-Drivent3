@@ -61,24 +61,29 @@ async function setTicketAsPaid(ticketId: number) {
 
 async function checkTiketsByUser(enrollmentId: number) {
   
+  
   const dataTicket = await ticketRepository.getTiketsByUser(enrollmentId);
 
   //console.log('ticketService dataTicketPaymentUser', dataTicket);
 
-  //não existe ticket
-  if (!dataTicket.ticketTypeId) throw notFoundError;
+  //não existe dados do ticket
+  if (!dataTicket.ticketTypeId) {    
+    throw notFoundError
+  }
 
   const isTicketPaidNotRemoteAndHotelIncluded =
     dataTicket.status === TicketStatus.PAID &&
     dataTicket.TicketType.isRemote === false &&
     dataTicket.TicketType.includesHotel;
 
-  if (!isTicketPaidNotRemoteAndHotelIncluded) {
+  if (!isTicketPaidNotRemoteAndHotelIncluded) {    
     throw paymentNotFound;
   }
 
   return dataTicket;
 }
+
+
 
 const ticketsService = {
   getTicketsType,
@@ -87,7 +92,8 @@ const ticketsService = {
   findTicket,
   getTicketType,
   setTicketAsPaid,
-  checkTiketsByUser,
+  checkTiketsByUser
+
 };
 
 export default ticketsService;

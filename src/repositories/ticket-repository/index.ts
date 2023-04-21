@@ -93,6 +93,7 @@ async function setTicketAsPaid(ticketId: number): Promise<Ticket> {
   });
 }
 
+
 const ticketRepository = {
   getTicketsType,
   createTiket,
@@ -101,6 +102,7 @@ const ticketRepository = {
   getTiketsByUser,
   findTicket,
   setTicketAsPaid,
+  
 };
 
 export default ticketRepository;
